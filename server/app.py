@@ -58,6 +58,28 @@ if __name__ == '__main__':
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 
+
+@app.route('/bakeries')
+def get_bakeries():
+    bakeries = Bakery.query.all()
+    return jsonify([bakery.to_dict() for bakery in bakeries]), 200
+
+@app.route('/bakeries/<int:id>')
+def get_bakery_by_id(id):
+    bakery = Bakery.query.get_or_404(id)
+    return jsonify(bakery.to_dict()), 200
+
+@app.route('/baked_goods/by_price')
+def baked_goods_by_price():
+    goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    return jsonify([good.to_dict() for good in goods]), 200
+
+@app.route('/baked_goods/most_expensive')
+def most_expensive_baked_good():
+    good = BakedGood.query.order_by(BakedGood.price.desc()).first()
+    return jsonify(good.to_dict()), 200
+
+
 db = SQLAlchemy()
 
 class Game(db.Model, SerializerMixin):
